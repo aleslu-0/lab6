@@ -15,4 +15,5 @@ int main()
     cout << l.nodeAt(1)->getData() << endl; //works
     //l.displayForward(); //works
     l.displayBackward();
+    return 0;
 }

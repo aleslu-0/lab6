@@ -1,4 +1,3 @@
-#pragma
 using namespace std;
 
 class Node {
