@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 #include <iostream>
 using namespace std;
 
@@ -39,7 +39,7 @@ private:
 	Node* tail = nullptr;
 	int size = 0;
 public:
-	
+
 	bool add(Node* data, int pos) {
 		if (data == nullptr || pos < 0 || pos > size) {
 			return false;
@@ -59,14 +59,14 @@ public:
 		}
 		else { //middle
 			Node* n = head;
-			for(int i=0; i<pos; i++) { //find node after pos
+			for (int i = 0; i < pos; i++) { //find node after pos
 				n = n->getNext();
 			}
 			data->setPrev(n->getPrev());
 			data->getPrev()->setNext(data);
 
 			data->setNext(n);
-			n->setPrev(data);			
+			n->setPrev(data);
 		}
 
 		size++;
@@ -88,7 +88,7 @@ public:
 				head->setPrev(nullptr);
 			}
 		}
-		else if (pos == size-1) { //end
+		else if (pos == size - 1) { //end
 			toRemove = tail;
 			tail = tail->getPrev();
 			if (!tail) {
@@ -100,11 +100,11 @@ public:
 		}
 		else { //middle
 			Node* n = head;
-			for (int i = 0; i < pos; i++) { 
+			for (int i = 0; i < pos; i++) {
 				n = n->getNext();
 			}
 			toRemove = n;
-			
+
 			Node* prev = toRemove->getPrev();
 			Node* next = toRemove->getNext();
 
@@ -162,7 +162,7 @@ public:
 			return nullptr;
 		}
 		Node* n = head;
-		for (int i = 0; i < pos; i++) { 
+		for (int i = 0; i < pos; i++) {
 			n = n->getNext();
 		}
 		return n;
