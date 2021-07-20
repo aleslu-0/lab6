@@ -171,7 +171,7 @@ public:
 	void setHeight(int nh) {
 		height = nh;
 	}
-	string getKind() {
+	virtual string getKind() {
 		if (upward) {
 			return "UpTriangle";
 		}
@@ -216,7 +216,7 @@ public:
 	void setRadius(int nr) {
 		radius = nr;
 	}
-	string getKind() {
+	virtual string getKind() {
 		return "Circle";
 	}
 	int getHeight() {
@@ -261,7 +261,7 @@ public:
 	void setHeight(int nh) {
 		height = nh;
 	}
-	string getKind() {
+	virtual string getKind() {
 		if (lessThan) {
 			return "lesserV";
 		}
@@ -273,7 +273,7 @@ public:
 	virtual void render(SDL_Renderer* r) {
 		float x = getX();
 		float y = getY();
-		cout << "Drawing a triangle with the base of: " << base << " and height of: " << height << " at: " << getX() << ", " << getY() << endl;
+		cout << "Drawing a V with the base of: " << base << " and height of: " << height << " at: " << getX() << ", " << getY() << endl;
 		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
 		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
 		float newBase = base / 2;
@@ -304,8 +304,8 @@ public:
 	void setLength(int nl) {
 		line = nl;
 	}
-	string getKind() {
-		return "V";
+	virtual string getKind() {
+		return "X";
 	}
 	int getHeight() {
 		return -1;
@@ -338,7 +338,7 @@ public:
 	void setLength1(int nl) {
 		line = nl;
 	}
-	string getKind() {
+	virtual string getKind() {
 		return "Star";
 	}
 	int getHeight() {
@@ -380,7 +380,7 @@ public:
 	void setHeight(int nh) {
 		height = nh;
 	}
-	string getKind() {
+	virtual string getKind() {
 		return "Z";
 	}
 	virtual void render(SDL_Renderer* r) {
@@ -442,7 +442,7 @@ public:
 	int getHeight() {
 		return -1;
 	}
-	string getKind() {
+	virtual string getKind() {
 		return "Card";
 	}
 };
@@ -462,105 +462,130 @@ public:
 		}
 		//Point2D p(10, 10);
 
+		doStuff(r);
+		
+	}
+	void doStuff(SDL_Renderer* r) {
 		Shape* s[20];
+		int arr_order[20] = {};
+		randomizeOrder(arr_order);
 		for (int i = 0; i < 20; i++) {
-			s[i] = createCards(i);
+			s[i] = createCards(arr_order[i], i);
 		}
+
 		for (int i = 0; i < 20; i++) {
+			//cout << arr_order[i] << endl;
 			arr[i]->setType(s[i]);
+		}
+
+		for (int i = 0; i < 20; i++) {
+			cout << arr[i]->getType()->getKind() << endl;
 			arr[i]->getType()->render(r); //draw
 		}
-		
-		//bool what = arr[0]->getType() == arr[1]->getType();
-		cout << s[0]->getKind() << " " << s[1]->getKind() << endl;
-		
-		bool what = s[0]->getKind() == s[1]->getKind();
-		cout << boolalpha << what;
-		cout << endl << arr[0]->getX();
-		//arr[0]->remove(r);		
 	}
-	Shape* createCards(int i) {
+	void randomizeOrder(int* aarr) {
+		int slots[20];
+		int count = 0;
+		while (count < 20) {
+			int randomIndex = rand() % 20;		
+			int* slotUsed = find(begin(slots), end(slots), randomIndex);
+			// When the element is not found, std::find returns the end of the range
+			if (slotUsed != end(slots)) {
+				//cerr << "Found" << endl;
+			}
+			else {
+				//cerr << "Not found" << endl;
+				//cout << randomIndex;
+				slots[count] = randomIndex;	
+				count++;
+			}				
+		}
+		for (int i = 0; i < 20; i++) {
+			aarr[i] = slots[i];
+		}
+	}
+	Shape* createCards(int i, int pos) {
 		if (i == 0 || i == 1) {
-			return newSqr(i);
+			return newSqr(pos);
 		}
 		else if (i == 2 || i == 3) {
-			return newTri(i, true);
+			return newTri(pos, true);
 		}
 		else if (i == 4 || i == 5) {
-			return newTri(i, false);		
+			return newTri(pos, false);		
 		}
 		else if (i == 6 || i == 7) {
-			return newCir(i);
+			return newCir(pos);
 		}
 		else if (i == 8 || i == 9) {
-			return newV(i, true);
+			return newV(pos, true);
 		}
 		else if (i == 10 || i == 11) {
-			return newV(i, false);
+			return newV(pos, false);
 		}
 		else if (i == 12 || i == 13) {
-			return newRec(i);
+			return newRec(pos);
 		}
 		else if (i == 14 || i == 15) {
-			return newX(i);
+			return newX(pos);
 		}
 		else if (i == 16 || i == 17) {
-			return newStar(i);
+			return newStar(pos);
 		}
 		else if (i == 18 || i == 19) {
-			return newZ(i);
+			return newZ(pos);
 		}
 		else {
-			return newSqr(i);
+			cerr << "Error"; 
 		}
 		
 	}
-	Rectangle* newSqr(int i) {
-		Point2D p(arr_x[i], arr_y[i]);
+	Rectangle* newSqr(int pos) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		Rectangle *r = new Rectangle(p, arr_r, 30, 30);
 		r->setKind("Square");
 		return r;	
 	}
-	Rectangle* newRec(int i) {
-		Point2D p(arr_x[i], arr_y[i]);
+	Rectangle* newRec(int pos) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		Rectangle* r = new Rectangle(p, arr_r, 15, 40);
 		r->setKind("Rectangle");
 		return r;
 	}
-	Triangle* newTri(int i, bool dir) {
-		Point2D p(arr_x[i], arr_y[i]);
+	Triangle* newTri(int pos, bool dir) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		Triangle* t = new Triangle(p, arr_r, 20, 20, dir);
 		return t;
 	}
-	Circle* newCir(int i) {
-		Point2D p(arr_x[i], arr_y[i]);
+	Circle* newCir(int pos) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		Circle* c = new Circle(p, arr_r, 20);
 		return c;
 	}
-	V* newV(int i, bool less) {
-		Point2D p(arr_x[i], arr_y[i]);
+	V* newV(int pos, bool less) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		V* v = new V(p, arr_r, 20, 20, less);
 		return v;
 	}
-	X* newX(int i) {
-		Point2D p(arr_x[i], arr_y[i]);
+	X* newX(int pos) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		X* x = new X(p, arr_r, 20);
 		return x;
 	}
-	Star* newStar(int i) {
-		Point2D p(arr_x[i], arr_y[i]);
+	Star* newStar(int pos) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		Star* s = new Star(p, arr_r, 40);
 		return s;
 	}
-	Z* newZ(int i) {
-		Point2D p(arr_x[i], arr_y[i]);
+	Z* newZ(int pos) {
+		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
 		Z* z = new Z(p, arr_r, 20, 20);
 		return z;
