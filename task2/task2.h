@@ -430,6 +430,12 @@ public:
 		//SDL_Delay(500);
 
 	}
+	int getWidth() {
+		return width;
+	}
+	int getHeight() {
+		return height;
+	}
 	void remove(SDL_Renderer* r) {
 		SDL_RenderClear(r);
 	}
@@ -438,9 +444,6 @@ public:
 	}
 	Shape* getType() {
 		return s;
-	}
-	int getHeight() {
-		return -1;
 	}
 	virtual string getKind() {
 		return "Card";
@@ -478,12 +481,16 @@ public:
 			arr[i]->setType(s[i]);
 		}
 
+	}
+	void renderAll(SDL_Renderer* r) {
 		for (int i = 0; i < 20; i++) {
 			cout << arr[i]->getType()->getKind() << endl;
 			arr[i]->getType()->render(r); //draw
 		}
 	}
+
 	void randomizeOrder(int* aarr) {
+		srand(time(NULL));
 		int slots[20];
 		int count = 0;
 		while (count < 20) {
