@@ -3,6 +3,7 @@
 #include "task2.h"
 #include <vector>
 #include <ctime>
+#include <string>
 
 Point2D Point2D::operator+(const Point2D& p) {
     Point2D P;
@@ -51,6 +52,11 @@ int main(int arg, char* args[])
     SDL_Event event;
     
     bool quit = false;
+    int cardsRevealed = 0;
+    int cardsFound = 0;
+    int tries = 0;
+    string firstCard;
+    string secondCard;
     while (!quit) {
         while (SDL_PollEvent(&event)) {
             int low = 60;
@@ -60,26 +66,68 @@ int main(int arg, char* args[])
             int size_y = low + rand() % 250;
             int size_rad = low + rand() % 250;
 
+            if (cardsFound == 20) {
+                cout << "\nYou win!\nTotal tries: " << tries << endl;
+                quit = true;
+            }
 
             Point2D p(randx, randy);
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
             else if (event.button.button == SDL_BUTTON_LEFT) {
-                int x, y;
-                x = event.button.x;
-                y = event.button.y;
-                for (int i = 0; i < 20; i++) {
-                    if (x <= m.arr_x[i] + (m.arr[i]->getWidth()/2) && x >= m.arr_x[i] - (m.arr[i]->getWidth()/2)) {
-                        if (y <= m.arr_y[i] + (m.arr[i]->getHeight() / 2) && y >= m.arr_y[i] - (m.arr[i]->getHeight() / 2)) {
-                            cout << "\nHolyshit";
-                            drawIGuess(i, m, renderer);
+                if (event.type == SDL_MOUSEBUTTONUP) {
+                    int x, y;
+                    x = event.button.x;
+                    y = event.button.y;
+                    if (cardsRevealed == 2) {
+                        tries++;
+                        cout << endl << firstCard << " and " << secondCard << endl;
+                        if (firstCard == secondCard) {
+                            cout << "\nThe same\n";
+                            for (int i = 0; i < 20; i++) {
+                                if (m.arr[i] != nullptr) {
+                                    if (m.arr[i]->getType()->getKind() == firstCard) {
+                                        cout << "\nwow";
+                                        m.arr[i] = nullptr;
+                                        cardsFound += 1;
+                                    }
+                                }
+                            }
+                        }
+                        cardsRevealed = 0;
+                        m.clearAll(renderer);
+                        m.renderAll(renderer);
+                    }
+                    else {
+                        for (int i = 0; i < 20; i++) {
+                            if (m.arr[i] != nullptr) {
+                                if (x <= m.arr_x[i] + (m.arr[i]->getWidth() / 2) && x >= m.arr_x[i] - (m.arr[i]->getWidth() / 2)) {
+                                    if (y <= m.arr_y[i] + (m.arr[i]->getHeight() / 2) && y >= m.arr_y[i] - (m.arr[i]->getHeight() / 2)) {   
+                                        if (cardsRevealed == 0) {
+                                            firstCard = m.arr[i]->getType()->getKind();
+                                        }
+                                        else if (cardsRevealed == 1) {
+                                            secondCard = m.arr[i]->getType()->getKind();
+                                        }
+                                        cardsRevealed++;                                      
+                                        drawIGuess(i, m, renderer);                                       
+                                    }
+                                }
+                            }
                         }
                     }
-                        
+                
                 }
-                    
+                                                           
             }
+            else if (event.button.button == SDL_BUTTON_RIGHT) {
+                cardsRevealed = 0;
+                tries = 0;
+                m.clearAll(renderer);
+                m.renderAll(renderer);
+            }
+
             /*else if (SDL_KEYUP) {
                 switch (event.key.keysym.sym) {
 

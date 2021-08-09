@@ -420,7 +420,6 @@ public:
 		float newWidth = width / 2;
 		float newHeight = height / 2;
 		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
-		//SDL_RenderClear(r);
 		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
 		for (int i = 0; i < width; i++) {
 			SDL_RenderDrawLine(r, x-newWidth+i, y-newHeight, x-newWidth+i, y+newHeight);
@@ -461,10 +460,10 @@ public:
 		for (int i = 0; i < 20; i++) {
 			Point2D p(arr_x[i], arr_y[i]);
 			arr[i] = new Card(p, arr_r);
-			arr[i]->render(r);
+			//arr[i]->render(r);
 		}
 		//Point2D p(10, 10);
-
+		renderAll(r);
 		doStuff(r);
 		
 	}
@@ -482,10 +481,17 @@ public:
 		}
 
 	}
+	void clearAll(SDL_Renderer* r) {
+		SDL_SetRenderDrawColor(r, 0, 0, 0, 0);
+		SDL_RenderClear(r);
+		
+		SDL_RenderPresent(r);
+	}
 	void renderAll(SDL_Renderer* r) {
+		
 		for (int i = 0; i < 20; i++) {
-			cout << arr[i]->getType()->getKind() << endl;
-			arr[i]->getType()->render(r); //draw
+			if(arr[i] != nullptr)
+				arr[i]->render(r);
 		}
 	}
 
