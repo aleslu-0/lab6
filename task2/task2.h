@@ -3,6 +3,7 @@
 #include <string>
 #include <SDL.h>
 #include <math.h>
+
 using namespace std;
 
 class Point2D {
@@ -18,9 +19,13 @@ public:
 		x = 0.0;
 		y = 0.0;
 	}
-	Point2D(const float& nx, const float& ny) {
+	Point2D(const float &nx, const float &ny) {
 		x = nx;
 		y = ny;
+	}
+	Point2D(const int &nx, const int &ny) {
+		x = static_cast<float>(nx);
+		y = static_cast<float>(ny);
 	}
 	float getX() {
 		return x;
@@ -36,74 +41,35 @@ public:
 class Shape {
 private:
 	int colors[4];
+	int pos_index;
 	Point2D pos;
 public:
-	Shape(Point2D p, int* arr) {
+	Shape(Point2D p, int* arr, int i) {
 		pos = p;
+		pos_index = i;
 		for (int k = 0; k < 4; k++) {
 			colors[k] = arr[k];
 		}
 	}
-	string getColors() {
-		string s = to_string(colors[0]) + ", " + to_string(colors[1]) + ", " + to_string(colors[2]) + ", " + to_string(colors[3]);
-		return s;
-	}
-	int getRed() {
-		return colors[0];
-	}
-	int getGreen() {
-		return colors[1];
-	}
-	int getBlue() {
-		return colors[2];
-	}
-	int getAlpha() {
-		return colors[3];
-	}
-	float getX() {
-		return pos.getX();
-	}
-	float getY() {
-		return pos.getY();
-	}
+
+	int getIndex();
+	void setIndex(int setIndex);
+	string getColors();
+	int getRed();
+	int getGreen();
+	int getBlue();
+	int getAlpha();
+	int getX();
+	int getY();
+
 	virtual void render(SDL_Renderer* r) = 0;
-
 	virtual int getHeight() = 0;
-
 	virtual string getKind() = 0;
 
-	void setRed(int setRed) {
-		if (colors[0] < 0 || colors[0] > 255) {
-			colors[0] = colors[0];
-		}
-		else {
-			colors[0] = setRed;
-		}
-	}
-	void setGreen(int setGreen) {
-		if (colors[1] < 0 || colors[1] > 255) {
-			colors[1] = colors[1];
-		}
-		else {
-			colors[1] = setGreen;
-		}
-	}
-	void setBlue(int setBlue) {
-		if (colors[2] < 0 || colors[2] > 255) {
-			colors[2] = colors[2];
-		}
-		else {
-			colors[2] = setBlue;
-		}
-	}
-	void setAlpha(int setAlpha) {
-		if (colors[3] < 0 || colors[3] > 255) {
-			colors[3] = colors[3];
-		}
-		else {
-			colors[3] = setAlpha;
-		}
-	}
+	void setRed(int setRed);
+	void setGreen(int setGreen);
+	void setBlue(int setBlue);
+	void setAlpha(int setAlpha);
 };
 class Rectangle : public Shape {
 private:
@@ -111,44 +77,16 @@ private:
 	int height;
 	string kind;
 public:
-	Rectangle(Point2D p, int* arr, int nw, int nh) :
-		Shape(p, arr), width(nw), height(nh) {
+	Rectangle(Point2D p, int* arr, int i, int nw, int nh) :
+		Shape(p, arr, i), width(nw), height(nh) {
 	}
-	int getWidth() {
-		return width;
-	}
-	int getHeight() {
-		return height;
-	}
-	void setWidth(int nw) {
-		width = nw;
-	}
-	void setHeight(int nh) {
-		height = nh;
-	}
-	string getKind() {
-		return kind;
-	}
-	void setKind(string newKind) {
-		kind = newKind;
-	}
-	virtual void render(SDL_Renderer* r) {
-		int x = getX();
-		int y = getY();
-		cout << "Drawing a rectangle with the height of: " << width << " and height of: " << height << " at: " << getX() << ", " << getY() << endl;
-		float newWidth = width / 2;
-		float newHeight = height / 2;
-		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
-		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
-		SDL_RenderDrawLine(r, x, y, x, y);
-		SDL_RenderDrawLine(r, x-newWidth, y-newHeight, x + newWidth, y-newHeight);
-		SDL_RenderDrawLine(r, x + newWidth, y-newHeight, x + newWidth, y + newHeight);
-		SDL_RenderDrawLine(r, x + newWidth, y + newHeight, x - newWidth, y + newHeight);
-		SDL_RenderDrawLine(r, x - newWidth, y + newHeight, x-newWidth, y-newHeight);
-
-		SDL_RenderPresent(r);
-
-	}
+	int getWidth();
+	int getHeight();
+	void setWidth(int nw);
+	void setHeight(int nh);
+	virtual string getKind();
+	void setKind(string newKind);
+	virtual void render(SDL_Renderer* r);
 };
 class Triangle : public Shape {
 private:
@@ -156,98 +94,38 @@ private:
 	int height;
 	bool upward;
 public:
-	Triangle(Point2D p, int* arr, int nb, int nh, bool dir) :
-		Shape(p, arr), base(nb), height(nh), upward(dir) {
+	Triangle(Point2D p, int* arr, int i, int nb, int nh, bool dir) :
+		Shape(p, arr, i), base(nb), height(nh), upward(dir) {
 	}
-	int getBase() {
-		return base;
-	}
-	int getHeight() {
-		return height;
-	}
-	void setBase(int nb) {
-		base = nb;
-	}
-	void setHeight(int nh) {
-		height = nh;
-	}
-	virtual string getKind() {
-		if (upward) {
-			return "UpTriangle";
-		}
-		else {
-			return "DownTriangle";
-		}
-		
-	}
-	virtual void render(SDL_Renderer* r) {
-		int x = getX();
-		int y = getY();
-		cout << "Drawing a triangle with the base of: " << base << " and height of: " << height << " at: " << getX() << ", " << getY() << endl;
-		float newBase = base / 2;
-		float newHeight = height / 2;
-		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
-		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
-		SDL_RenderDrawPoint(r, x, y);
-		if (upward) {
-			SDL_RenderDrawLine(r, x - newBase, y + newHeight, x + newBase, y + newHeight);
-			SDL_RenderDrawLine(r, x + newBase, y + newHeight, x, y - newHeight);
-			SDL_RenderDrawLine(r, x, y - newHeight, x - newBase, y + newHeight);
-		}
-		else {
-			SDL_RenderDrawLine(r, x - newBase, y - newHeight, x + newBase, y - newHeight);
-			SDL_RenderDrawLine(r, x + newBase, y - newHeight, x, y + newHeight);
-			SDL_RenderDrawLine(r, x, y + newHeight, x - newBase, y - newHeight);
-		}		
-
-		SDL_RenderPresent(r);
-	}
+	int getBase();
+	int getHeight();
+	void setBase(int nb);
+	void setHeight(int nh);
+	virtual string getKind();
+	virtual void render(SDL_Renderer* r);
 };
 class Circle : public Shape {
 private:
 	int radius;
 public:
-	Circle(Point2D p, int* arr, int nr) :
-		Shape(p, arr), radius(nr) {
+	Circle(Point2D p, int* arr, int i, int nr) :
+		Shape(p, arr, i), radius(nr) {
 	}
-	int getRadius() {
-		return radius;
-	}
-	void setRadius(int nr) {
-		radius = nr;
-	}
-	virtual string getKind() {
-		return "Circle";
-	}
-	int getHeight() {
-		return -1;
-	}
-	virtual void render(SDL_Renderer* r) {
-		cout << "Drawing a circle with a radius of: " << radius << " at: " << getX() << ", " << getY() << endl;
-		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
-		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
-		int pos_x = getX();
-		int pos_y = getY();
-		int theta = 0;
-		int step = 2;
-		SDL_RenderDrawPoint(r, pos_x , pos_y);
-		while (theta <= 2160) {
-			int x = radius * cos(theta);
-			int y = radius * sin(theta);
-			SDL_RenderDrawPoint(r, pos_x + x, pos_y + y);
-			theta += step;
-		}
-		SDL_RenderPresent(r);
-	}
+	int getRadius();
+	void setRadius(int nr);
+	virtual string getKind();
+	int getHeight();
+	virtual void render(SDL_Renderer* r);
 };
+
 class V : public Shape {
 private:
 	int base;
 	int height;
 	bool lessThan;
 public:
-	V(Point2D p, int* arr, int nb, int nh, bool nv) :
-		Shape(p, arr), base(nb), height(nh), lessThan(nv) {
+	V(Point2D p, int* arr, int i, int nb, int nh, bool nv) :
+		Shape(p, arr, i), base(nb), height(nh), lessThan(nv) {
 	}
 	int getBase() {
 		return base;
@@ -256,10 +134,14 @@ public:
 		return height;
 	}
 	void setBase(int nb) {
-		base = nb;
+		if (nb > 0) {
+			base = nb;
+		}	
 	}
 	void setHeight(int nh) {
-		height = nh;
+		if (nh > 0) {
+			height = nh;
+		}		
 	}
 	virtual string getKind() {
 		if (lessThan) {
@@ -271,13 +153,13 @@ public:
 		
 	}
 	virtual void render(SDL_Renderer* r) {
-		float x = getX();
-		float y = getY();
+		int x = getX();
+		int y = getY();
 		cout << "Drawing a V with the base of: " << base << " and height of: " << height << " at: " << getX() << ", " << getY() << endl;
 		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
 		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
-		float newBase = base / 2;
-		float newHeight = height / 2;
+		int newBase = (base / 2);
+		int newHeight = (height / 2);
 		SDL_RenderDrawPoint(r, x, y);
 		if (lessThan) {
 			SDL_RenderDrawLine(r, x + newBase, y - newHeight, x - newBase, y);
@@ -294,8 +176,8 @@ class X : public Shape {
 private:
 	int line;
 public:
-	X(Point2D p, int* arr, int nl) :
-		Shape(p, arr), line(nl) {
+	X(Point2D p, int* arr, int i, int nl) :
+		Shape(p, arr, i), line(nl) {
 	}
 	int getLength1() {
 		return line;
@@ -311,12 +193,12 @@ public:
 		return -1;
 	}
 	virtual void render(SDL_Renderer* r) {
-		float x = getX();
-		float y = getY();
+		int x = getX();
+		int y = getY();
 		cout << "Drawing an X with the base of: " << line << " and height of: " << line << " at: " << getX() << ", " << getY() << endl;
 		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
 		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
-		float halfLine = line / 2;
+		int halfLine = (line / 2);
 		SDL_RenderDrawPoint(r, x, y);
 		SDL_RenderDrawLine(r, x - halfLine, y + halfLine, x + halfLine, y - halfLine);
 		SDL_RenderDrawLine(r, x + halfLine, y + halfLine, x - halfLine, y - halfLine);
@@ -328,8 +210,8 @@ class Star : public Shape {
 private:
 	int line;
 public:
-	Star(Point2D p, int* arr, int nl) :
-		Shape(p, arr), line(nl) {
+	Star(Point2D p, int* arr, int i, int nl) :
+		Shape(p, arr, i), line(nl) {
 	}
 	int getLength() {
 		return line;
@@ -345,12 +227,12 @@ public:
 		return -1;
 	}
 	virtual void render(SDL_Renderer* r) {
-		float x = getX();
-		float y = getY();
+		int x = getX();
+		int y = getY();
 		cout << "Drawing an X with the base of: " << line << " and height of: " << line << " at: " << getX() << ", " << getY() << endl;
 		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
 		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
-		float halfLine = line / 2;
+		int halfLine = line / 2;
 		SDL_RenderDrawPoint(r, x, y);
 		SDL_RenderDrawLine(r, x - halfLine, y + halfLine, x, y - halfLine);
 		SDL_RenderDrawLine(r, x, y - halfLine, x + halfLine, y + halfLine);
@@ -365,8 +247,8 @@ private:
 	int width;
 	int height;
 public:
-	Z(Point2D p, int* arr, int nw, int nh) :
-		Shape(p, arr), width(nw), height(nh) {
+	Z(Point2D p, int* arr, int i, int nw, int nh) :
+		Shape(p, arr, i), width(nw), height(nh) {
 	}
 	int getWidth() {
 		return width;
@@ -387,8 +269,8 @@ public:
 		int x = getX();
 		int y = getY();
 		cout << "Drawing a rectangle with the height of: " << width << " and height of: " << height << " at: " << getX() << ", " << getY() << endl;
-		float newWidth = width / 2;
-		float newHeight = height / 2;
+		int newWidth = width / 2;
+		int newHeight = height / 2;
 		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
 		//SDL_RenderClear(r);
 		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
@@ -408,17 +290,17 @@ class Card : public Shape {
 private:
 	int width = 75;
 	int height = 125;
-	Shape *s;
+	Shape *s = nullptr;
 public:
-	Card(Point2D p, int* arr) :
-		Shape(p, arr) {
+	Card(Point2D p, int* arr, int i) :
+		Shape(p, arr, i) {
 	}
 	virtual void render(SDL_Renderer* r) {
 		int x = getX();
 		int y = getY();
 		cout << "Drawing a rectangle with the height of: " << width << " and height of: " << height << " at: " << getX() << ", " << getY() << endl;
-		float newWidth = width / 2;
-		float newHeight = height / 2;
+		int newWidth = width / 2;
+		int newHeight = height / 2;
 		SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
 		SDL_SetRenderDrawColor(r, getRed(), getGreen(), getBlue(), getAlpha());
 		for (int i = 0; i < width; i++) {
@@ -428,6 +310,9 @@ public:
 
 		//SDL_Delay(500);
 
+	}
+	~Card() {
+		delete s;
 	}
 	int getWidth() {
 		return width;
@@ -456,16 +341,20 @@ public:
 	int arr_y[20] = {};
 	Memory(SDL_Renderer* r) {
 		fillArrays(arr_x, arr_y);
-		int arr_r[4] = { 255, 255, 255, 0 };
-		for (int i = 0; i < 20; i++) {
-			Point2D p(arr_x[i], arr_y[i]);
-			arr[i] = new Card(p, arr_r);
-			//arr[i]->render(r);
-		}
+		initCards(r);
 		//Point2D p(10, 10);
 		renderAll(r);
 		doStuff(r);
 		
+	}
+	
+	void initCards(SDL_Renderer* r) {
+		int arr_r[4] = { 255, 255, 255, 0 };
+		for (int i = 0; i < 20; i++) {
+			Point2D p(arr_x[i], arr_y[i]);
+			arr[i] = new Card(p, arr_r, i);
+			//arr[i]->render(r);
+		}
 	}
 	void doStuff(SDL_Renderer* r) {
 		Shape* s[20];
@@ -479,7 +368,6 @@ public:
 			//cout << arr_order[i] << endl;
 			arr[i]->setType(s[i]);
 		}
-
 	}
 	void clearAll(SDL_Renderer* r) {
 		SDL_SetRenderDrawColor(r, 0, 0, 0, 0);
@@ -495,28 +383,8 @@ public:
 		}
 	}
 
-	void randomizeOrder(int* aarr) {
-		srand(time(NULL));
-		int slots[20];
-		int count = 0;
-		while (count < 20) {
-			int randomIndex = rand() % 20;		
-			int* slotUsed = find(begin(slots), end(slots), randomIndex);
-			// When the element is not found, std::find returns the end of the range
-			if (slotUsed != end(slots)) {
-				//cerr << "Found" << endl;
-			}
-			else {
-				//cerr << "Not found" << endl;
-				//cout << randomIndex;
-				slots[count] = randomIndex;	
-				count++;
-			}				
-		}
-		for (int i = 0; i < 20; i++) {
-			aarr[i] = slots[i];
-		}
-	}
+	void randomizeOrder(int* aarr); 
+
 	Shape* createCards(int i, int pos) {
 		if (i == 0 || i == 1) {
 			return newSqr(pos);
@@ -551,56 +419,56 @@ public:
 		else {
 			cerr << "Error"; 
 		}
-		
+		return nullptr;
 	}
 	Rectangle* newSqr(int pos) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		Rectangle *r = new Rectangle(p, arr_r, 30, 30);
+		Rectangle *r = new Rectangle(p, arr_r, pos, 30, 30);
 		r->setKind("Square");
 		return r;	
 	}
 	Rectangle* newRec(int pos) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		Rectangle* r = new Rectangle(p, arr_r, 15, 40);
+		Rectangle* r = new Rectangle(p, arr_r, pos, 15, 40);
 		r->setKind("Rectangle");
 		return r;
 	}
 	Triangle* newTri(int pos, bool dir) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		Triangle* t = new Triangle(p, arr_r, 20, 20, dir);
+		Triangle* t = new Triangle(p, arr_r, pos, 20, 20, dir);
 		return t;
 	}
 	Circle* newCir(int pos) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		Circle* c = new Circle(p, arr_r, 20);
+		Circle* c = new Circle(p, arr_r, pos, 20);
 		return c;
 	}
 	V* newV(int pos, bool less) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		V* v = new V(p, arr_r, 20, 20, less);
+		V* v = new V(p, arr_r, pos, 20, 20, less);
 		return v;
 	}
 	X* newX(int pos) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		X* x = new X(p, arr_r, 20);
+		X* x = new X(p, arr_r, pos, 20);
 		return x;
 	}
 	Star* newStar(int pos) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		Star* s = new Star(p, arr_r, 40);
+		Star* s = new Star(p, arr_r, pos, 40);
 		return s;
 	}
 	Z* newZ(int pos) {
 		Point2D p(arr_x[pos], arr_y[pos]);
 		int arr_r[4] = { 255, 0, 50, 255 };
-		Z* z = new Z(p, arr_r, 20, 20);
+		Z* z = new Z(p, arr_r, pos, 20, 20);
 		return z;
 	}
 
