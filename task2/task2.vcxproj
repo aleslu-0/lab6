@@ -146,11 +146,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="adds.cpp" />
     <ClCompile Include="task2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="adds.h" />
     <ClInclude Include="task2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -18,15 +18,9 @@
     <ClCompile Include="task2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="adds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="task2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="adds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

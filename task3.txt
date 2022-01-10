@@ -1,0 +1,10 @@
+What did you learn? What did you know already?
+-For task 1 I had to read up a lot on linked lists. For task 2, I knew SDL from the previous lab. Learned more about keyboard events and pointers.
+
+What was difficult in the lab? How did you overcome it?
+-I struggled a lot on task 1. Had to receive pointers from a classmate to progress. Task 2 took a long time, but wasn't very difficult.
+
+How can the lab be improved?
+-Task 1 and 2 could be separate labs, they aren't really connected. 
+
+I estimate that I spent over 50 hours on the lab. I worked on and off for quite a while and lost track of how much time. 
